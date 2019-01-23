@@ -1,19 +1,14 @@
 const express = require('express')
 const router = express.Router()
-const isAuthenticated = require('../middlewares').isAuthenticated
+const { isAuthenticated } = require('../middlewares/auth')
 const UserController = require('../controllers/UserController')
 
-router
-  .route('/')
-  .get(isAuthenticated, UserController.getUsers)
-  .post(UserController.createUser)
+router.get('/', isAuthenticated, UserController.getUsers)
 
 router
   .route('/:id')
   .get(isAuthenticated, UserController.getUserById)
-  .patch(UserController.updateUserById)
-  .delete(UserController.deleteUserById)
-
-router.post('/login', UserController.login)
+  .patch(isAuthenticated, UserController.updateUserById)
+  .delete(isAuthenticated, UserController.deleteUserById)
 
 module.exports = router
