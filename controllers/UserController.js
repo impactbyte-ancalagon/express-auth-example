@@ -1,4 +1,6 @@
 const User = require('../models').User
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 exports.getUsers = async (req, res) => {
   const users = await User.findAll()
@@ -7,9 +9,13 @@ exports.getUsers = async (req, res) => {
 }
 
 exports.createUser = async (req, res) => {
-  const user = await User.create(req.body)
+  const salt = await bcrypt.genSalt(12)
 
-  res.json({ user })
+  req.body.password = await bcrypt.hash(req.body.password, salt)
+
+  await User.create(req.body)
+
+  res.send('Success')
 }
 
 exports.getUserById = async (req, res) => {
@@ -36,4 +42,35 @@ exports.deleteUserById = async (req, res) => {
   await User.destroy({ where: { id: req.params.id } })
 
   res.json({})
+}
+
+exports.login = async (req, res) => {
+  //1. get user account
+  const user = await User.findOne({ where: { email: req.body.email } })
+
+  // check user account
+  if (user === null) {
+    return res.send('User NOT found!')
+  }
+
+  //2. Password Validation
+  const validPassword = await bcrypt.compare(req.body.password, user.password)
+
+  // check password
+  if (!validPassword) {
+    return res.send('Password NOT valid!!!')
+  }
+
+  //3. Generate Token
+  const token = jwt.sign(
+    { id: user.id, email: user.email }, // payload
+    process.env.JWT_SECRET, // secret
+    { expiresIn: '7d' } // Option
+  )
+
+  res.json({
+    message: 'Your are logged in',
+    id: user.id,
+    token
+  })
 }
