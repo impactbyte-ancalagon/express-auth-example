@@ -1,8 +1,7 @@
+const { User } = require('../models')
 const jwt = require('jsonwebtoken')
-const User = require('../models').User
 
 exports.isAuthenticated = async (req, res, next) => {
-  //Get token
   const token =
     req.headers.authorization && req.headers.authorization.split(' ')[1]
 
