@@ -37,3 +37,7 @@ exports.signIn = async (req, res) => {
     token
   })
 }
+
+exports.verifyToken = (req, res) => {
+  res.json({ user: req.decoded })
+}
