@@ -47,5 +47,5 @@ exports.signIn = async (req, res) => {
 }
 
 exports.verifyToken = (req, res) => {
-  res.status(200).json({ user: req.decoded })
+  res.status(200).json({ user: req.user })
 }

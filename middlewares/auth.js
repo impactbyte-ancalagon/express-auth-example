@@ -17,7 +17,7 @@ exports.isAuthenticated = async (req, res, next) => {
       return res.status(400).json({ message: 'Account not found.' })
     }
 
-    req.decoded = decoded
+    req.user = user
 
     next()
   } catch (err) {
